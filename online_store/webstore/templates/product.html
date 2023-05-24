@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{name}}</h1>
+
+{% if images %}
+    {% for im in images %}
+        <p><img src="{{ im.url.url }}"/></p>
+    {% endfor %}
+{% endif %}
+
+<p>Описание: {{description}}<p/>
+<p>Цена: {{price}}<p/>
+<a href="{% url 'cart_add' product.pk %}"> Добавить в корзину </a>
+
+{% endblock %}

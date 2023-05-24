@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Имя:{{username}}</h1>
+
+<p>Почта: {{email}}<p/>
+<p>Дата регистрации: {{date_joined}}<p/>
+
+<a href="{% url 'cart' %}">Корзина</a>
+{% endblock %}

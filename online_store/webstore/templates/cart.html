@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+        {% block title %} {{ title }} {% endblock title %}
+        {% block header %}
+            <ul>
+                {% for prod in products %}
+                    <li></li>
+                    <a href="{% url 'product' prod.pk %}">{{ prod.name }}</a>
+                    <p>Количество: <a href="{% url 'cart_delete' prod.pk %}"> - </a> {{prod.count}} <a href="{% url 'cart_add' prod.pk %}"> + </a><p/>
+                    <p>Цена за единицу: {{prod.price}}<p/>
+                    <p>Общая цена: {{prod.price_all}}<p/>
+                        {% empty %}
+                    <li>Нет товаров</li>
+                {% endfor %}
+            </ul>
+        {% endblock header %}
