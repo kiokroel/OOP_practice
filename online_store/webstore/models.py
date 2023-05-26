@@ -48,9 +48,19 @@ class CartProduct(models.Model):
 class CountProduct(models.Model):
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     count = models.PositiveIntegerField()
-    place = models.TextField()
 
     class Meta:
         verbose_name = 'Количество товаров'
         verbose_name_plural = 'Количество товаров'
         ordering = ['product_id', 'count']
+
+
+class SoldProducts(models.Model):
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    cart = models.ForeignKey('Cart', on_delete=models.CASCADE)
+    time_sold = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Проданные товары'
+        verbose_name_plural = 'Проданные товары'
+        ordering = ['time_sold', 'cart']

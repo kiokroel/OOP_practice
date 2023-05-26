@@ -66,13 +66,16 @@ def check_cart(request):
             products_count[prod.product_id] = 1
     products_count = products_count.items()
     products_list = list()
+    total_price = 0
     for prod_id, prod_count in products_count:
         prod = Product.objects.filter(id=prod_id)[0]
         prod.count = prod_count
+        total_price += prod.price
         prod.price_all = prod_count * prod.price
         products_list.append(prod)
     context = {
         'products': products_list,
+        'total_price': total_price,
     }
     return render(request, 'cart.html', context=context)
 
@@ -81,8 +84,8 @@ def delete_from_cart(request, product_id):
     if not request.user.is_authenticated:
         return redirect('login')
     user_id = request.user.id
-    cart = Cart.objects.filter(user_id=user_id)
-    cart_id = cart[0].id
+    cart = Cart.objects.filter(user_id=user_id)[0]
+    cart_id = cart.id
     CartProduct.objects.filter(cart_id=cart_id, product_id=product_id)[0].delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -94,6 +97,41 @@ def add_to_cart(request, product_id):
     cart = Cart.objects.filter(user_id=user_id)[0]
     CartProduct.objects.create(cart=cart, product_id=product_id)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def check_purchase_history(request):
+    user_id = request.user.id
+    cart = Cart.objects.filter(user_id=user_id)
+    if not cart:
+        Cart.objects.create(user=request.user)
+    cart_id = cart[0].id
+    purchased_goods = SoldProducts.objects.filter(cart_id=cart_id)
+    for i in range(len(purchased_goods)):
+        purchased_goods[i].name = Product.objects.filter(id=purchased_goods[i].product_id)[0]
+    context = {
+        'products': purchased_goods,
+    }
+    return render(request, 'purchase_history.html', context=context)
+
+
+def buy_products(request):
+    user_id = request.user.id
+    cart = Cart.objects.filter(user_id=user_id)
+    if not cart:
+        Cart.objects.create(user=request.user)
+        return redirect('cart')
+    cart_id = cart[0].id
+    cart_product = CartProduct.objects.filter(cart_id=cart_id)
+    for i in range(len(cart_product)):
+        product_id = cart_product[i].product_id
+        product_count = CountProduct.objects.filter(product_id=product_id)
+        if product_count and product_count[0].count > 0:
+            count = product_count[0].count - 1
+            product_count.update(count=count)
+            cart_product[i].delete()
+            SoldProducts.objects.create(cart_id=cart_id, product_id=product_id)
+
+    return redirect('purchase_history')
 
 
 class RegisterUser(CreateView):
