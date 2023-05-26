@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+        {% block title %} {{ title }} {% endblock title %}
+        {% block header %}
+            <ul>
+                {% for prod in products %}
+                    <li>
+                    <a href="{% url 'product' prod.product_id %}">{{ prod.name }}</a>
+                    <p>Дата: {{prod.time_sold}}<p/>
+                    </li>
+                        {% empty %}
+                    <li>История покупок пуста</li>
+                {% endfor %}
+            </ul>
+        {% endblock header %}
