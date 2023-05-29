@@ -104,6 +104,7 @@ def check_purchase_history(request):
     cart = Cart.objects.filter(user_id=user_id)
     if not cart:
         Cart.objects.create(user=request.user)
+    cart = Cart.objects.filter(user_id=user_id)
     cart_id = cart[0].id
     purchased_goods = SoldProducts.objects.filter(cart_id=cart_id)
     for i in range(len(purchased_goods)):
